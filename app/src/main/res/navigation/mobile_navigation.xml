@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/viewAllFragment">
+
+    <fragment
+        android:id="@+id/viewAllFragment"
+        android:name="com.dhimasdewanto.githubstars.view.view_all.ViewAllFragment"
+        android:label="view_all_fragment"
+        tools:layout="@layout/view_all_fragment" >
+        <action
+            android:id="@+id/action_viewAllFragment_to_viewDetailActivity"
+            app:destination="@id/viewDetailActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/viewDetailActivity"
+        android:name="com.dhimasdewanto.githubstars.view.view_detail.ViewDetailActivity"
+        android:label="activity_view_detail"
+        tools:layout="@layout/activity_view_detail" >
+        <argument android:name="github_stars"
+            app:argType="com.dhimasdewanto.githubstars.domain.entities.GitHubStars" />
+    </activity>
+</navigation>
