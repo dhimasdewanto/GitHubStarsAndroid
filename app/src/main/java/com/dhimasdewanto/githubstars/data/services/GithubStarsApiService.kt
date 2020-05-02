@@ -2,7 +2,6 @@ package com.dhimasdewanto.githubstars.data.services
 
 import com.dhimasdewanto.githubstars.core.interceptors.ConnectivityInterceptor
 import com.dhimasdewanto.githubstars.data.models.GithubStarsApiModel
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

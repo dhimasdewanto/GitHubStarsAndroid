@@ -5,13 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.view_all.ViewAllActivity">
+    tools:context=".MainActivity">
 
 <!--    <androidx.recyclerview.widget.RecyclerView-->
 <!--        android:id="@+id/recycler_view_github_stars"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
 <!--        tools:listitem="@layout/item_github_stars"/>-->
+
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar_view_all"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/colorPrimary"-->
+<!--        app:title="@string/app_name"-->
+<!--        app:titleTextColor="@color/colorCanvas"-->
+<!--        android:elevation="4dp"-->
+<!--        app:menu="@menu/menu_view_all"/>-->
 
     <fragment
         android:id="@+id/nav_host_fragment"

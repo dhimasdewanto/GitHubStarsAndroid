@@ -13,4 +13,12 @@ class GithubStarsRepoData(
         networkSource.fetchGithubStars(page, ITEMS_PER_PAGE)
         return networkSource.downloadedGitHubStars
     }
+
+    override suspend fun searchGithubStars(
+        searchText: String,
+        page: Int
+    ): LiveData<List<GitHubStars>> {
+        networkSource.fetchGithubStars(page, ITEMS_PER_PAGE, searchText)
+        return networkSource.downloadedGitHubStars
+    }
 }

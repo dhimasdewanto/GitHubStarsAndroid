@@ -23,7 +23,7 @@ import org.kodein.di.generic.instance
 
 class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
     override val kodein: Kodein by closestKodein()
-    private val fragmentFactory: ViewAllViewModelFactory by instance<ViewAllViewModelFactory>()
+    private val viewModelFactory: ViewAllViewModelFactory by instance<ViewAllViewModelFactory>()
 
     private lateinit var viewModel: ViewAllViewModel
     private lateinit var recyclerAdapter: GitHubStarsRecyclerAdapter
@@ -38,7 +38,7 @@ class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this, fragmentFactory).get(ViewAllViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ViewAllViewModel::class.java)
         initRecyclerView()
         bindUI()
     }
@@ -49,8 +49,9 @@ class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter
     }
 
     override fun onItemSelected(position: Int, item: GitHubStars) {
+        // TODO: Go to detail page.
         val bundle = bundleOf("github_stars" to item)
-        navController.navigate(R.id.action_viewAllFragment_to_viewDetailActivity, bundle)
+        navController.navigate(R.id.action_viewAllFragment_to_viewDetailFragment, bundle)
     }
 
     private fun bindUI() = launch {

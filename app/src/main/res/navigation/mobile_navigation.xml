@@ -11,15 +11,12 @@
         android:label="view_all_fragment"
         tools:layout="@layout/view_all_fragment" >
         <action
-            android:id="@+id/action_viewAllFragment_to_viewDetailActivity"
-            app:destination="@id/viewDetailActivity" />
+            android:id="@+id/action_viewAllFragment_to_viewDetailFragment"
+            app:destination="@id/viewDetailFragment" />
     </fragment>
-    <activity
-        android:id="@+id/viewDetailActivity"
-        android:name="com.dhimasdewanto.githubstars.view.view_detail.ViewDetailActivity"
-        android:label="activity_view_detail"
-        tools:layout="@layout/activity_view_detail" >
-        <argument android:name="github_stars"
-            app:argType="com.dhimasdewanto.githubstars.domain.entities.GitHubStars" />
-    </activity>
+    <fragment
+        android:id="@+id/viewDetailFragment"
+        android:name="com.dhimasdewanto.githubstars.view.view_detail.ViewDetailFragment"
+        android:label="view_detail_fragment"
+        tools:layout="@layout/view_detail_fragment" />
 </navigation>

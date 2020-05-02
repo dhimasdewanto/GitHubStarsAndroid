@@ -14,10 +14,12 @@ class GithubStarsNetworkSourceImpl(
     override val downloadedGitHubStars: LiveData<List<GitHubStars>>
         get() = _downloadedGithubStars
 
-    override suspend fun fetchGithubStars(page: Int, perPage: Int) {
+    override suspend fun fetchGithubStars(page: Int, perPage: Int, searchQuery: String?) {
+        val query = searchQuery ?: "stars:>1"
+
         try {
             val githubStarsFromApi =
-                githubStarsApiService.getGithubStars("stars:>1", "stars", page, perPage)
+                githubStarsApiService.getGithubStars(query, "stars", page, perPage)
             val githubStars = githubStarsFromApi.items.map { stars ->
                 var programmingLanguage: String? = stars.language
                 if (programmingLanguage == null) {
