@@ -1,7 +1,6 @@
 package com.dhimasdewanto.githubstars.view.view_all
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
@@ -22,13 +22,17 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
 
-class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
+class ViewAllFragment : ScopeFragment(), KodeinAware,
+    GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
     override val kodein: Kodein by closestKodein()
     private val viewModelFactory: ViewAllViewModelFactory by instance<ViewAllViewModelFactory>()
 
     private lateinit var viewModel: ViewAllViewModel
     private lateinit var recyclerAdapter: GitHubStarsRecyclerAdapter
     private lateinit var navController: NavController
+    private lateinit var layoutManager: LinearLayoutManager
+
+    private var isLoading: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +46,7 @@ class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewAllViewModel::class.java)
         initRecyclerView()
         bindUI()
-        setLoadMoreButton()
+        setInfiniteScroll()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,21 +68,53 @@ class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter
     }
 
     private fun initRecyclerView() {
+        this.layoutManager = LinearLayoutManager(context)
+        recyclerAdapter = GitHubStarsRecyclerAdapter(this@ViewAllFragment)
         recycler_view_github_stars.apply {
-            layoutManager = LinearLayoutManager(context)
-            recyclerAdapter = GitHubStarsRecyclerAdapter(this@ViewAllFragment)
+            layoutManager = this@ViewAllFragment.layoutManager
             adapter = recyclerAdapter
         }
     }
 
-    private fun setLoadMoreButton() {
-        btn_load_more.setOnClickListener {
-            loadMoreData()
+    private fun setInfiniteScroll() {
+        recycler_view_github_stars.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    loadWhenReachBottom()
+                }
+
+                super.onScrolled(recyclerView, dx, dy)
+            }
+        })
+    }
+
+    private fun loadWhenReachBottom() {
+        val visibleItemCount = layoutManager.childCount
+        val pastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val total = recyclerAdapter.itemCount
+
+        if ((visibleItemCount + pastVisibleItem) >= total) {
+            if (!isLoading) {
+                setLoading(true)
+                loadMoreData()
+            }
         }
     }
 
     private fun loadMoreData() = launch {
         viewModel.loadMoreData()
         recyclerAdapter.notifyDataSetChanged()
+        setLoading(false)
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        if (isLoading) {
+            this.isLoading = true
+            loading_bar.visibility = View.VISIBLE
+            return
+        }
+
+        this.isLoading = false
+        loading_bar.visibility = View.GONE
     }
 }

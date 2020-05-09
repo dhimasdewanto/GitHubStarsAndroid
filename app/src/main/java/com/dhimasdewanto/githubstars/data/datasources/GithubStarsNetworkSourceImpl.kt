@@ -19,10 +19,7 @@ class GithubStarsNetworkSourceImpl(
     override val downloadedGitHubStars: LiveData<List<GitHubStars>>
         get() = _downloadedGithubStars
 
-    /**
-     * [page] useless for now.
-     */
-    override suspend fun fetchGithubStars(page: Int, searchQuery: String?) {
+    override suspend fun fetchGithubStars(searchQuery: String?) {
         starPage = 1
         lastQuery = searchQuery
         try {

@@ -2,17 +2,16 @@ package com.dhimasdewanto.githubstars.view.view_all
 
 import androidx.lifecycle.ViewModel
 import com.dhimasdewanto.githubstars.core.lazyDeferred
-import com.dhimasdewanto.githubstars.domain.usecases.GetAllUseCase
-import com.dhimasdewanto.githubstars.domain.usecases.GetAllUseCaseParams
+import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 
 class ViewAllViewModel(
-    private val getAllUseCase: GetAllUseCase
+    private val githubStarsRepo: GithubStarsRepo
 ) : ViewModel() {
     val listGithubStars by lazyDeferred {
-        getAllUseCase.call(GetAllUseCaseParams(1))
+        githubStarsRepo.getGithubStars()
     }
 
     suspend fun loadMoreData() {
-        getAllUseCase.loadMoreData()
+        githubStarsRepo.loadMoreData()
     }
 }

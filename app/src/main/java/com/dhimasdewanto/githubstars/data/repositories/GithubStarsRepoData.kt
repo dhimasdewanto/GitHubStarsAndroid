@@ -9,8 +9,8 @@ import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 class GithubStarsRepoData(
     private val networkSource: GithubStarsNetworkSource
 ) : GithubStarsRepo {
-    override suspend fun getGithubStars(page: Int): LiveData<List<GitHubStars>> {
-        networkSource.fetchGithubStars(page)
+    override suspend fun getGithubStars(): LiveData<List<GitHubStars>> {
+        networkSource.fetchGithubStars()
         return networkSource.downloadedGitHubStars
     }
 
@@ -18,7 +18,7 @@ class GithubStarsRepoData(
         searchText: String,
         page: Int
     ): LiveData<List<GitHubStars>> {
-        networkSource.fetchGithubStars(page, searchText)
+        networkSource.fetchGithubStars(searchText)
         return networkSource.downloadedGitHubStars
     }
 
