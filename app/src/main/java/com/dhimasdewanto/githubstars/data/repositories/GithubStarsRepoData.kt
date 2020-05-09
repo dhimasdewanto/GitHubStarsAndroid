@@ -10,7 +10,7 @@ class GithubStarsRepoData(
     private val networkSource: GithubStarsNetworkSource
 ) : GithubStarsRepo {
     override suspend fun getGithubStars(page: Int): LiveData<List<GitHubStars>> {
-        networkSource.fetchGithubStars(page, ITEMS_PER_PAGE)
+        networkSource.fetchGithubStars(page)
         return networkSource.downloadedGitHubStars
     }
 
@@ -18,7 +18,11 @@ class GithubStarsRepoData(
         searchText: String,
         page: Int
     ): LiveData<List<GitHubStars>> {
-        networkSource.fetchGithubStars(page, ITEMS_PER_PAGE, searchText)
+        networkSource.fetchGithubStars(page, searchText)
         return networkSource.downloadedGitHubStars
+    }
+
+    override suspend fun loadMoreData() {
+        networkSource.loadMoreData()
     }
 }

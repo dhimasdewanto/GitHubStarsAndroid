@@ -1,6 +1,7 @@
 package com.dhimasdewanto.githubstars.view.view_all
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewAllViewModel::class.java)
         initRecyclerView()
         bindUI()
+        setLoadMoreButton()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,5 +69,16 @@ class ViewAllFragment : ScopeFragment(), KodeinAware, GitHubStarsRecyclerAdapter
             recyclerAdapter = GitHubStarsRecyclerAdapter(this@ViewAllFragment)
             adapter = recyclerAdapter
         }
+    }
+
+    private fun setLoadMoreButton() {
+        btn_load_more.setOnClickListener {
+            loadMoreData()
+        }
+    }
+
+    private fun loadMoreData() = launch {
+        viewModel.loadMoreData()
+        recyclerAdapter.notifyDataSetChanged()
     }
 }

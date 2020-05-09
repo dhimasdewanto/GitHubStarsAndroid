@@ -11,4 +11,8 @@ class ViewAllViewModel(
     val listGithubStars by lazyDeferred {
         getAllUseCase.call(GetAllUseCaseParams(1))
     }
+
+    suspend fun loadMoreData() {
+        getAllUseCase.loadMoreData()
+    }
 }

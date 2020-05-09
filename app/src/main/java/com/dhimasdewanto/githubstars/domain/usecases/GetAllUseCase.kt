@@ -14,6 +14,10 @@ class GetAllUseCase(
         val listData = repo.getGithubStars(params.page)
         return getIOContext(listData)
     }
+
+    suspend fun loadMoreData() {
+        repo.loadMoreData()
+    }
 }
 
 data class GetAllUseCaseParams(

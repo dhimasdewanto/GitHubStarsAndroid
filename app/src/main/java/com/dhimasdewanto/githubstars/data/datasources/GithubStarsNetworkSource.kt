@@ -8,7 +8,8 @@ interface GithubStarsNetworkSource {
 
     suspend fun fetchGithubStars(
         page: Int,
-        perPage: Int,
         searchQuery: String? = null
     )
+
+    suspend fun loadMoreData()
 }
