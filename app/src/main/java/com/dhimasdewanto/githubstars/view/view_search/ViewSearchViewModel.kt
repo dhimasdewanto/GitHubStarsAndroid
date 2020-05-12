@@ -8,14 +8,10 @@ class ViewSearchViewModel(
     private val githubStarsRepo: GithubStarsRepo
 ) : ViewModel() {
     val listGithubStars by lazyDeferred {
-        githubStarsRepo.getGithubStars()
+        githubStarsRepo.downloadedGitHubStars
     }
 
     suspend fun fetchGithubStars(searchText: String) {
         githubStarsRepo.fetchGithubStars(searchText)
-    }
-
-    suspend fun loadMoreData() {
-        githubStarsRepo.loadMoreData()
     }
 }

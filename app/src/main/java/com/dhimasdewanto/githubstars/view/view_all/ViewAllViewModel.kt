@@ -8,7 +8,8 @@ class ViewAllViewModel(
     private val githubStarsRepo: GithubStarsRepo
 ) : ViewModel() {
     val listGithubStars by lazyDeferred {
-        githubStarsRepo.getAndFetchGithubStars()
+        githubStarsRepo.fetchGithubStars()
+        githubStarsRepo.downloadedGitHubStars
     }
 
     suspend fun loadMoreData() {
