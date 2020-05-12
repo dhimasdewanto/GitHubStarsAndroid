@@ -1,14 +1,18 @@
-package com.dhimasdewanto.githubstars.view.view_all
+package com.dhimasdewanto.githubstars.view.view_search
 
 import androidx.lifecycle.ViewModel
 import com.dhimasdewanto.githubstars.core.lazyDeferred
 import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 
-class ViewAllViewModel(
+class ViewSearchViewModel(
     private val githubStarsRepo: GithubStarsRepo
 ) : ViewModel() {
     val listGithubStars by lazyDeferred {
-        githubStarsRepo.getAndFetchGithubStars()
+        githubStarsRepo.getGithubStars()
+    }
+
+    suspend fun fetchGithubStars(searchText: String) {
+        githubStarsRepo.fetchGithubStars(searchText)
     }
 
     suspend fun loadMoreData() {

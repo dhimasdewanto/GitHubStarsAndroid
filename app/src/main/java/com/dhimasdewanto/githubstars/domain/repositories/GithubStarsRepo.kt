@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 
 interface GithubStarsRepo {
-    suspend fun getGithubStars() : LiveData<List<GitHubStars>>
-    suspend fun searchGithubStars(searchText: String, page: Int) : LiveData<List<GitHubStars>>
+    suspend fun getAndFetchGithubStars() : LiveData<List<GitHubStars>>
     suspend fun loadMoreData()
+
+    suspend fun fetchGithubStars(searchText: String)
+    suspend fun getGithubStars() : LiveData<List<GitHubStars>>
 }

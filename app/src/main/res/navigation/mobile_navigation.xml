@@ -13,10 +13,18 @@
         <action
             android:id="@+id/action_viewAllFragment_to_viewDetailFragment"
             app:destination="@id/viewDetailFragment" />
+        <action
+            android:id="@+id/action_viewAllFragment_to_viewSearchFragment"
+            app:destination="@id/viewSearchFragment" />
     </fragment>
     <fragment
         android:id="@+id/viewDetailFragment"
         android:name="com.dhimasdewanto.githubstars.view.view_detail.ViewDetailFragment"
         android:label="view_detail_fragment"
         tools:layout="@layout/view_detail_fragment" />
+    <fragment
+        android:id="@+id/viewSearchFragment"
+        android:name="com.dhimasdewanto.githubstars.view.view_search.ViewSearchFragment"
+        android:label="view_search_fragment"
+        tools:layout="@layout/view_search_fragment" />
 </navigation>

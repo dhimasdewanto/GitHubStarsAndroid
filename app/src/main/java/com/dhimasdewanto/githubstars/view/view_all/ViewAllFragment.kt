@@ -15,6 +15,7 @@ import com.dhimasdewanto.githubstars.R
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.view.view_all.adapters.GitHubStarsRecyclerAdapter
+import kotlinx.android.synthetic.main.list_view_github_stars.*
 import kotlinx.android.synthetic.main.view_all_fragment.*
 import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
@@ -47,6 +48,7 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         initRecyclerView()
         bindUI()
         setInfiniteScroll()
+        goToSearch()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,8 +56,10 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         navController = Navigation.findNavController(view)
     }
 
+    /**
+     * Go to detail page.
+     */
     override fun onItemSelected(position: Int, item: GitHubStars) {
-        // TODO: Go to detail page.
         val bundle = bundleOf("github_stars" to item)
         navController.navigate(R.id.action_viewAllFragment_to_viewDetailFragment, bundle)
     }
@@ -116,5 +120,11 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
 
         this.isLoading = false
         loading_bar.visibility = View.GONE
+    }
+
+    private fun goToSearch() {
+        btn_float_search.setOnClickListener {
+            navController.navigate(R.id.action_viewAllFragment_to_viewSearchFragment)
+        }
     }
 }

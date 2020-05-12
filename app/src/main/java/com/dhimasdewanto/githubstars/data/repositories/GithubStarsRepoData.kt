@@ -9,16 +9,16 @@ import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 class GithubStarsRepoData(
     private val networkSource: GithubStarsNetworkSource
 ) : GithubStarsRepo {
-    override suspend fun getGithubStars(): LiveData<List<GitHubStars>> {
+    override suspend fun getAndFetchGithubStars(): LiveData<List<GitHubStars>> {
         networkSource.fetchGithubStars()
         return networkSource.downloadedGitHubStars
     }
 
-    override suspend fun searchGithubStars(
-        searchText: String,
-        page: Int
-    ): LiveData<List<GitHubStars>> {
+    override suspend fun fetchGithubStars(searchText: String) {
         networkSource.fetchGithubStars(searchText)
+    }
+
+    override suspend fun getGithubStars(): LiveData<List<GitHubStars>> {
         return networkSource.downloadedGitHubStars
     }
 
