@@ -1,25 +1,23 @@
 package com.dhimasdewanto.githubstars.view.view_search
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
+import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
-import com.dhimasdewanto.githubstars.view.view_all.ViewAllViewModelFactory
 import com.dhimasdewanto.githubstars.view.view_all.adapters.GitHubStarsRecyclerAdapter
 import kotlinx.android.synthetic.main.list_view_github_stars.*
 import kotlinx.android.synthetic.main.view_search_fragment.*
 import kotlinx.coroutines.launch
-import okhttp3.internal.Internal.instance
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
@@ -46,7 +44,10 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewSearchViewModel::class.java)
         initRecyclerView()
+        bindListGithubStars()
         onSearchAction()
+        bindIsLoading()
+        setInfiniteScroll()
     }
 
     /**
@@ -60,17 +61,17 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
     private fun onSearchAction() {
         btn_search.setOnClickListener {
             val searchText = edit_text_search.text.toString()
-            bindSearchResultToUI(searchText)
+            startSearching(searchText)
         }
     }
 
-    private fun bindSearchResultToUI(searchText: String) = launch {
-        viewModel.fetchGithubStars(searchText)
-        val listGithubStars = viewModel.listGithubStars.await()
-        listGithubStars.observe(viewLifecycleOwner, Observer { list ->
-            recyclerAdapter.submitList(list)
-        })
+    private fun startSearching(searchText: String) = launch {
+        // Clear recent search to show loading progress.
         recyclerAdapter.notifyDataSetChanged()
+
+        when (viewModel.startSearching(searchText)) {
+            is Ok -> recyclerAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun initRecyclerView() {
@@ -79,6 +80,51 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         recycler_view_github_stars.apply {
             layoutManager = this@ViewSearchFragment.layoutManager
             adapter = recyclerAdapter
+        }
+    }
+
+    private fun bindListGithubStars() = launch {
+        val listGithubStars = viewModel.downloadedGitHubStars
+        listGithubStars.observe(viewLifecycleOwner, Observer { list ->
+            recyclerAdapter.submitList(list)
+        })
+    }
+
+    private fun bindIsLoading() {
+        val isLoading = viewModel.isLoading
+        isLoading.observe(viewLifecycleOwner, Observer { isLoad ->
+            when (isLoad) {
+                true -> loading_bar.visibility = View.VISIBLE
+                false -> loading_bar.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun setInfiniteScroll() {
+        recycler_view_github_stars.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    loadWhenReachBottom()
+                }
+
+                super.onScrolled(recyclerView, dx, dy)
+            }
+        })
+    }
+
+    private fun loadWhenReachBottom() {
+        val visibleItemCount = layoutManager.childCount
+        val pastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val total = recyclerAdapter.itemCount
+
+        if ((visibleItemCount + pastVisibleItem) >= total) {
+            loadMoreData()
+        }
+    }
+
+    private fun loadMoreData() = launch {
+        when(viewModel.loadMoreData()) {
+            is Ok -> recyclerAdapter.notifyDataSetChanged()
         }
     }
 

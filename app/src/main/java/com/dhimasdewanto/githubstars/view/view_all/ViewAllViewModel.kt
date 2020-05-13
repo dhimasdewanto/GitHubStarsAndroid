@@ -12,7 +12,7 @@ import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 class ViewAllViewModel(
     private val githubStarsRepo: GithubStarsRepo
 ) : ViewModel() {
-    private var currentPage: Int = 0
+    private var currentPage: Int = 1
 
     private val listGithubStars = mutableListOf<GitHubStars>()
     private val _downloadedGithubStars = MutableLiveData<List<GitHubStars>>()
@@ -31,7 +31,7 @@ class ViewAllViewModel(
         currentPage++
         _isLoading.value = true
 
-        return when (val result = getListGithubStars(currentPage)) {
+        return when (val result = getListGithubStars()) {
             is Ok -> {
                 val githubStars = result.value
                 listGithubStars.addAll(githubStars)
@@ -46,17 +46,5 @@ class ViewAllViewModel(
         }
     }
 
-    private suspend fun getListGithubStars(
-        page: Int
-    ) = githubStarsRepo.getListGithubStars(page)
-
-
-//    val listGithubStars by lazyDeferred {
-//        githubStarsRepo.fetchGithubStars()
-//        githubStarsRepo.downloadedGitHubStars
-//    }
-//
-//    suspend fun loadMoreData() {
-//        githubStarsRepo.loadMoreData()
-//    }
+    private suspend fun getListGithubStars() = githubStarsRepo.getListGithubStars(currentPage)
 }
