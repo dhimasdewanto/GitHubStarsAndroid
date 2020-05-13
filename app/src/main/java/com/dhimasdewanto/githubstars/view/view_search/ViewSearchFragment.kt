@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,7 +12,6 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
-import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.view.view_all.adapters.GitHubStarsRecyclerAdapter
@@ -44,9 +44,8 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewSearchViewModel::class.java)
         initRecyclerView()
-        bindListGithubStars()
-        onSearchAction()
-        bindIsLoading()
+        bindStateToUI()
+        setOnSearchButton()
         setInfiniteScroll()
     }
 
@@ -58,20 +57,15 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         navController.navigate(R.id.action_viewAllFragment_to_viewDetailFragment, bundle)
     }
 
-    private fun onSearchAction() {
+    private fun setOnSearchButton() {
         btn_search.setOnClickListener {
-            val searchText = edit_text_search.text.toString()
-            startSearching(searchText)
+            startSearching()
         }
     }
 
-    private fun startSearching(searchText: String) = launch {
-        // Clear recent search to show loading progress.
-        recyclerAdapter.notifyDataSetChanged()
-
-        when (viewModel.startSearching(searchText)) {
-            is Ok -> recyclerAdapter.notifyDataSetChanged()
-        }
+    private fun startSearching() = launch {
+        val searchText = edit_text_search.text.toString()
+        viewModel.startSearching(searchText)
     }
 
     private fun initRecyclerView() {
@@ -83,20 +77,31 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         }
     }
 
-    private fun bindListGithubStars() = launch {
-        val listGithubStars = viewModel.downloadedGitHubStars
-        listGithubStars.observe(viewLifecycleOwner, Observer { list ->
-            recyclerAdapter.submitList(list)
-        })
-    }
-
-    private fun bindIsLoading() {
-        val isLoading = viewModel.isLoading
-        isLoading.observe(viewLifecycleOwner, Observer { isLoad ->
-            when (isLoad) {
-                true -> loading_bar.visibility = View.VISIBLE
-                false -> loading_bar.visibility = View.GONE
+    private fun bindStateToUI() = launch {
+        val viewSearchState = viewModel.state
+        viewSearchState.observe(viewLifecycleOwner, Observer { state ->
+            when(state) {
+                is ViewSearchState.Initial -> {
+                    loading_bar.visibility = View.GONE
+                }
+                is ViewSearchState.ShowResult -> {
+                    loading_bar.visibility = View.GONE
+                    recyclerAdapter.submitList(state.listGithubStars)
+                }
+                is ViewSearchState.Loading -> {
+                    loading_bar.visibility = View.VISIBLE
+                    recyclerAdapter.submitList(emptyList())
+                }
+                is ViewSearchState.LoadingMoreData -> {
+                    loading_bar.visibility = View.VISIBLE
+                }
+                is ViewSearchState.Error -> {
+                    loading_bar.visibility = View.GONE
+                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                }
             }
+
+            recyclerAdapter.notifyDataSetChanged()
         })
     }
 
@@ -123,9 +128,7 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
     }
 
     private fun loadMoreData() = launch {
-        when(viewModel.loadMoreData()) {
-            is Ok -> recyclerAdapter.notifyDataSetChanged()
-        }
+        viewModel.loadMoreData()
     }
 
 }
