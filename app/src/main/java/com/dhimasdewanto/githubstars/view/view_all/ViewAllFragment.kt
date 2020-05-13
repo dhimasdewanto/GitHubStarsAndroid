@@ -12,6 +12,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
+import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.view.view_all.adapters.GitHubStarsRecyclerAdapter
@@ -22,6 +23,7 @@ import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
+import java.lang.Error
 
 class ViewAllFragment : ScopeFragment(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
@@ -32,8 +34,6 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
     private lateinit var recyclerAdapter: GitHubStarsRecyclerAdapter
     private lateinit var navController: NavController
     private lateinit var layoutManager: LinearLayoutManager
-
-    private var isLoading: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +46,8 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewAllViewModel::class.java)
         initRecyclerView()
-        bindUI()
+        bindListGithubStars()
+        bindIsLoading()
         setInfiniteScroll()
         goToSearch()
     }
@@ -64,13 +65,6 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         navController.navigate(R.id.action_viewAllFragment_to_viewDetailFragment, bundle)
     }
 
-    private fun bindUI() = launch {
-        val listGithubStars = viewModel.listGithubStars.await()
-        listGithubStars.observe(viewLifecycleOwner, Observer { list ->
-            recyclerAdapter.submitList(list)
-        })
-    }
-
     private fun initRecyclerView() {
         this.layoutManager = LinearLayoutManager(context)
         recyclerAdapter = GitHubStarsRecyclerAdapter(this@ViewAllFragment)
@@ -78,6 +72,24 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
             layoutManager = this@ViewAllFragment.layoutManager
             adapter = recyclerAdapter
         }
+    }
+
+    private fun bindListGithubStars() = launch {
+        viewModel.fetchGithubStars()
+        val listGithubStars = viewModel.downloadedGitHubStars
+        listGithubStars.observe(viewLifecycleOwner, Observer { list ->
+            recyclerAdapter.submitList(list)
+        })
+    }
+
+    private fun bindIsLoading() {
+        val isLoading = viewModel.isLoading
+        isLoading.observe(viewLifecycleOwner, Observer { isLoad ->
+            when(isLoad) {
+                true -> loading_bar.visibility = View.VISIBLE
+                false -> loading_bar.visibility = View.GONE
+            }
+        })
     }
 
     private fun setInfiniteScroll() {
@@ -98,28 +110,14 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         val total = recyclerAdapter.itemCount
 
         if ((visibleItemCount + pastVisibleItem) >= total) {
-            if (!isLoading) {
-                setLoading(true)
-                loadMoreData()
-            }
+            loadMoreData()
         }
     }
 
     private fun loadMoreData() = launch {
-        viewModel.loadMoreData()
-        recyclerAdapter.notifyDataSetChanged()
-        setLoading(false)
-    }
-
-    private fun setLoading(isLoading: Boolean) {
-        if (isLoading) {
-            this.isLoading = true
-            loading_bar.visibility = View.VISIBLE
-            return
+        when(viewModel.fetchGithubStars()) {
+            is Ok -> recyclerAdapter.notifyDataSetChanged()
         }
-
-        this.isLoading = false
-        loading_bar.visibility = View.GONE
     }
 
     private fun goToSearch() {
