@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,7 +24,6 @@ import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
-import java.lang.Error
 
 class ViewAllFragment : ScopeFragment(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
@@ -45,11 +45,13 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewAllViewModel::class.java)
+
         initRecyclerView()
-        bindListGithubStars()
-        bindIsLoading()
+        bindStateToUI()
         setInfiniteScroll()
-        goToSearch()
+        setGoToSearch()
+
+        startFetching()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,20 +76,21 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         }
     }
 
-    private fun bindListGithubStars() = launch {
-        viewModel.fetchGithubStars()
-        val listGithubStars = viewModel.downloadedGitHubStars
-        listGithubStars.observe(viewLifecycleOwner, Observer { list ->
-            recyclerAdapter.submitList(list)
-        })
-    }
-
-    private fun bindIsLoading() {
-        val isLoading = viewModel.isLoading
-        isLoading.observe(viewLifecycleOwner, Observer { isLoad ->
-            when(isLoad) {
-                true -> loading_bar.visibility = View.VISIBLE
-                false -> loading_bar.visibility = View.GONE
+    private fun bindStateToUI() = launch {
+        val viewAllState = viewModel.state
+        viewAllState.observe(viewLifecycleOwner, Observer { state ->
+            when(state) {
+                is ViewAllState.Initial -> loading_bar.visibility = View.GONE
+                is ViewAllState.LoadingMoreData -> loading_bar.visibility = View.VISIBLE
+                is ViewAllState.ShowResult -> {
+                    loading_bar.visibility = View.GONE
+                    recyclerAdapter.submitList(state.listGithubStars)
+                    recyclerAdapter.notifyDataSetChanged()
+                }
+                is ViewAllState.Error -> {
+                    loading_bar.visibility = View.GONE
+                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                }
             }
         })
     }
@@ -114,13 +117,15 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         }
     }
 
-    private fun loadMoreData() = launch {
-        when(viewModel.fetchGithubStars()) {
-            is Ok -> recyclerAdapter.notifyDataSetChanged()
-        }
+    private fun startFetching() = launch {
+        viewModel.startFetching()
     }
 
-    private fun goToSearch() {
+    private fun loadMoreData() = launch {
+        viewModel.loadMoreData()
+    }
+
+    private fun setGoToSearch() {
         btn_float_search.setOnClickListener {
             navController.navigate(R.id.action_viewAllFragment_to_viewSearchFragment)
         }

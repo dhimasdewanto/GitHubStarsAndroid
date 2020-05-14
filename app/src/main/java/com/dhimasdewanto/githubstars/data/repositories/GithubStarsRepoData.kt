@@ -24,37 +24,4 @@ class GithubStarsRepoData(
             Err(message)
         }
     }
-
-
-    private var currentPage: Int = 1
-    private var searchQuery: String? = null
-
-    private val listGithubStars = mutableListOf<GitHubStars>()
-    private val _downloadedGithubStars = MutableLiveData<List<GitHubStars>>()
-    override val downloadedGitHubStars: LiveData<List<GitHubStars>>
-        get() = _downloadedGithubStars
-
-    override suspend fun fetchGithubStars(searchText: String?) {
-        currentPage = 1
-        searchQuery = searchText
-        try {
-            val githubStars = networkSource.getDataFromNetwork(currentPage, searchQuery)
-            listGithubStars.clear()
-            listGithubStars.addAll(githubStars)
-            _downloadedGithubStars.postValue(listGithubStars)
-        } catch (e: NoConnectivityException) {
-            Log.e("Connectivity", "No Internet Connection.", e)
-        }
-    }
-
-    override suspend fun loadMoreData() {
-        currentPage++
-        try {
-            val githubStars = networkSource.getDataFromNetwork(currentPage, searchQuery)
-            listGithubStars.addAll(githubStars)
-            _downloadedGithubStars.postValue(listGithubStars)
-        } catch (e: NoConnectivityException) {
-            Log.e("Connectivity", "No Internet Connection.", e)
-        }
-    }
 }
