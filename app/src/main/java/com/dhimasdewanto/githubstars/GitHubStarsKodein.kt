@@ -8,6 +8,7 @@ import com.dhimasdewanto.githubstars.data.datasources.GithubStarsNetworkSourceIm
 import com.dhimasdewanto.githubstars.data.repositories.GithubStarsRepoData
 import com.dhimasdewanto.githubstars.data.services.GithubStarsApiService
 import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
+import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
 import com.dhimasdewanto.githubstars.view.view_all.ViewAllViewModelFactory
 import com.dhimasdewanto.githubstars.view.view_search.ViewSearchViewModelFactory
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -27,6 +28,7 @@ class GitHubStarsKodein : Application(), KodeinAware {
         bind() from singleton { GithubStarsApiService(instance()) }
         bind<GithubStarsNetworkSource>() with singleton { GithubStarsNetworkSourceImpl(instance()) }
         bind<GithubStarsRepo>() with singleton { GithubStarsRepoData(instance()) }
+        bind() from singleton { GetListGitHubStarsUseCase(instance()) }
         bind() from provider { ViewAllViewModelFactory(instance()) }
         bind() from provider { ViewSearchViewModelFactory(instance()) }
     }

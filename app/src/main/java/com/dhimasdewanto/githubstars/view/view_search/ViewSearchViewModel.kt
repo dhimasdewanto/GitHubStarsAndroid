@@ -8,9 +8,11 @@ import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.core.Res
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
+import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsParams
+import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
 
 class ViewSearchViewModel(
-    private val githubStarsRepo: GithubStarsRepo
+    private val useCase: GetListGitHubStarsUseCase
 ) : ViewModel() {
     private val _state = MutableLiveData<ViewSearchState>(ViewSearchState.Initial)
     val state: LiveData<ViewSearchState>
@@ -43,7 +45,7 @@ class ViewSearchViewModel(
         listGithubStars: List<GitHubStars> = emptyList()
     ) {
         when (val result = getListGithubStars(page, search)) {
-            is Err -> _state.value = ViewSearchState.Error(result.error)
+            is Err -> _state.value = ViewSearchState.Error(result.error.message)
             is Ok -> {
                 // NOT REVERSED!
                 val githubStars = listGithubStars + result.value
@@ -54,5 +56,5 @@ class ViewSearchViewModel(
     }
 
     private suspend fun getListGithubStars(page: Int, search: String) =
-        githubStarsRepo.getListGithubStars(page, search)
+        useCase.call(GetListGitHubStarsParams(page, search))
 }

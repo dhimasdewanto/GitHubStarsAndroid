@@ -7,9 +7,11 @@ import com.dhimasdewanto.githubstars.core.Err
 import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
+import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsParams
+import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
 
 class ViewAllViewModel(
-    private val githubStarsRepo: GithubStarsRepo
+    private val useCase: GetListGitHubStarsUseCase
 ) : ViewModel() {
     private val _state = MutableLiveData<ViewAllState>(ViewAllState.Initial)
     val state: LiveData<ViewAllState>
@@ -37,8 +39,8 @@ class ViewAllViewModel(
         page: Int,
         listGithubStars: List<GitHubStars> = emptyList()
     ) {
-        when (val result = githubStarsRepo.getListGithubStars(page)) {
-            is Err -> _state.value = ViewAllState.Error(result.error)
+        when (val result = useCase.call(GetListGitHubStarsParams(page))) {
+            is Err -> _state.value = ViewAllState.Error(result.error.message)
             is Ok -> {
                 // NOT REVERSED!
                 val newListGithubStars = listGithubStars + result.value

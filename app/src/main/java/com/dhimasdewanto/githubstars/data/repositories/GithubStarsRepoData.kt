@@ -14,14 +14,14 @@ class GithubStarsRepoData(
     override suspend fun getListGithubStars(
         page: Int,
         searchQuery: String?
-    ): Res<List<GitHubStars>, String> {
+    ): Res<List<GitHubStars>, Failure> {
         return try {
             val listGithubStars = networkSource.getDataFromNetwork(page, searchQuery)
             Ok(listGithubStars)
         } catch (e: Throwable) {
             val message = "Connection Error: ${e.message}"
             Log.e("Connectivity", message, e)
-            Err(message)
+            Err(DefaultFailure(message))
         }
     }
 }
