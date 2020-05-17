@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.view_all.adapters
+package com.dhimasdewanto.githubstars.view.main.view_all.adapters
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater

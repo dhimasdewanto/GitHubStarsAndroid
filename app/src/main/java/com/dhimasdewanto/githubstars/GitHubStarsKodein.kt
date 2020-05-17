@@ -9,8 +9,8 @@ import com.dhimasdewanto.githubstars.data.repositories.GithubStarsRepoData
 import com.dhimasdewanto.githubstars.data.services.GithubStarsApiService
 import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
-import com.dhimasdewanto.githubstars.view.view_all.ViewAllViewModelFactory
-import com.dhimasdewanto.githubstars.view.view_search.ViewSearchViewModelFactory
+import com.dhimasdewanto.githubstars.view.main.view_all.ViewAllViewModelFactory
+import com.dhimasdewanto.githubstars.view.main.view_search.ViewSearchViewModelFactory
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware

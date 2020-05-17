@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.view_all
+package com.dhimasdewanto.githubstars.view.main.view_all
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,12 +13,10 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
-import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
-import com.dhimasdewanto.githubstars.view.view_all.adapters.GitHubStarsRecyclerAdapter
+import com.dhimasdewanto.githubstars.view.main.view_all.adapters.GitHubStarsRecyclerAdapter
 import kotlinx.android.synthetic.main.list_view_github_stars.*
-import kotlinx.android.synthetic.main.view_all_fragment.*
 import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -39,7 +37,7 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.view_all_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_view_all, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,7 +47,6 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         initRecyclerView()
         bindStateToUI()
         setInfiniteScroll()
-        setGoToSearch()
 
         startFetching()
     }
@@ -64,7 +61,7 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
      */
     override fun onItemSelected(position: Int, item: GitHubStars) {
         val bundle = bundleOf("github_stars" to item)
-        navController.navigate(R.id.action_viewAllFragment_to_viewDetailFragment, bundle)
+        navController.navigate(R.id.action_nav_home_to_detailActivity, bundle)
     }
 
     private fun initRecyclerView() {
@@ -123,11 +120,5 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
 
     private fun loadMoreData() = launch {
         viewModel.loadMoreData()
-    }
-
-    private fun setGoToSearch() {
-        btn_float_search.setOnClickListener {
-            navController.navigate(R.id.action_viewAllFragment_to_viewSearchFragment)
-        }
     }
 }

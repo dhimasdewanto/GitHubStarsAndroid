@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.view_search
+package com.dhimasdewanto.githubstars.view.main.view_search
 
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 

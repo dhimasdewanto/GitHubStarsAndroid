@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.view_all
+package com.dhimasdewanto.githubstars.view.main.view_all
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.dhimasdewanto.githubstars.core.Err
 import com.dhimasdewanto.githubstars.core.Ok
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
-import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsParams
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
 

@@ -3,28 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/viewAllFragment">
+    app:startDestination="@+id/nav_home">
 
     <fragment
-        android:id="@+id/viewAllFragment"
-        android:name="com.dhimasdewanto.githubstars.view.view_all.ViewAllFragment"
-        android:label="view_all_fragment"
-        tools:layout="@layout/view_all_fragment" >
+        android:id="@+id/nav_home"
+        android:name="com.dhimasdewanto.githubstars.view.main.view_all.ViewAllFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_view_all" >
         <action
-            android:id="@+id/action_viewAllFragment_to_viewDetailFragment"
-            app:destination="@id/viewDetailFragment" />
-        <action
-            android:id="@+id/action_viewAllFragment_to_viewSearchFragment"
-            app:destination="@id/viewSearchFragment" />
+            android:id="@+id/action_nav_home_to_detailActivity"
+            app:destination="@id/detailActivity" />
     </fragment>
     <fragment
-        android:id="@+id/viewDetailFragment"
-        android:name="com.dhimasdewanto.githubstars.view.view_detail.ViewDetailFragment"
-        android:label="view_detail_fragment"
-        tools:layout="@layout/view_detail_fragment" />
-    <fragment
-        android:id="@+id/viewSearchFragment"
-        android:name="com.dhimasdewanto.githubstars.view.view_search.ViewSearchFragment"
-        android:label="view_search_fragment"
-        tools:layout="@layout/view_search_fragment" />
+        android:id="@+id/nav_search"
+        android:name="com.dhimasdewanto.githubstars.view.main.view_search.ViewSearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_view_search" >
+        <action
+            android:id="@+id/action_nav_search_to_detailActivity"
+            app:destination="@id/detailActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/detailActivity"
+        android:name="com.dhimasdewanto.githubstars.view.detail.DetailActivity"
+        android:label="Detail"
+        tools:layout="@layout/activity_detail" />
 </navigation>

@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.view_search
+package com.dhimasdewanto.githubstars.view.main.view_search
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +9,15 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
-import com.dhimasdewanto.githubstars.view.view_all.adapters.GitHubStarsRecyclerAdapter
+import com.dhimasdewanto.githubstars.view.main.view_all.adapters.GitHubStarsRecyclerAdapter
 import kotlinx.android.synthetic.main.list_view_github_stars.*
-import kotlinx.android.synthetic.main.view_search_fragment.*
+import kotlinx.android.synthetic.main.fragment_view_search.*
 import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -37,7 +38,7 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.view_search_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_view_search, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,12 +50,17 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         setInfiniteScroll()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+    }
+
     /**
      * Go to detail page.
      */
     override fun onItemSelected(position: Int, item: GitHubStars) {
         val bundle = bundleOf("github_stars" to item)
-        navController.navigate(R.id.action_viewAllFragment_to_viewDetailFragment, bundle)
+        navController.navigate(R.id.action_nav_search_to_detailActivity, bundle)
     }
 
     private fun setOnSearchButton() {
@@ -83,20 +89,25 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
             when(state) {
                 is ViewSearchState.Initial -> {
                     loading_bar.visibility = View.GONE
+                    text_search_initial.visibility = View.VISIBLE
                 }
                 is ViewSearchState.ShowResult -> {
                     loading_bar.visibility = View.GONE
+                    text_search_initial.visibility = View.GONE
                     recyclerAdapter.submitList(state.listGithubStars)
                 }
                 is ViewSearchState.Loading -> {
                     loading_bar.visibility = View.VISIBLE
+                    text_search_initial.visibility = View.GONE
                     recyclerAdapter.submitList(emptyList())
                 }
                 is ViewSearchState.LoadingMoreData -> {
                     loading_bar.visibility = View.VISIBLE
+                    text_search_initial.visibility = View.GONE
                 }
                 is ViewSearchState.Error -> {
                     loading_bar.visibility = View.GONE
+                    text_search_initial.visibility = View.GONE
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                 }
             }

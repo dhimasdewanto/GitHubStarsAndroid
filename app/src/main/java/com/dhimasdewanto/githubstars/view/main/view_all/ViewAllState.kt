@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.view_all
+package com.dhimasdewanto.githubstars.view.main.view_all
 
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 
