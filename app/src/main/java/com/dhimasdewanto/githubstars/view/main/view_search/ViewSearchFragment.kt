@@ -16,13 +16,14 @@ import com.dhimasdewanto.githubstars.R
 import com.dhimasdewanto.githubstars.core.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.view.main.view_all.adapters.GitHubStarsRecyclerAdapter
-import kotlinx.android.synthetic.main.list_view_github_stars.*
 import kotlinx.android.synthetic.main.fragment_view_search.*
+import kotlinx.android.synthetic.main.list_view_github_stars.*
 import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
+
 
 class ViewSearchFragment : ScopeFragment(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
