@@ -1,8 +1,11 @@
 package com.dhimasdewanto.githubstars
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import com.dhimasdewanto.githubstars.core.interceptors.ConnectivityInterceptor
 import com.dhimasdewanto.githubstars.core.interceptors.ConnectivityInterceptorImpl
+import com.dhimasdewanto.githubstars.core.themes.ThemeProvider
+import com.dhimasdewanto.githubstars.core.themes.ThemeProviderImpl
 import com.dhimasdewanto.githubstars.data.datasources.GithubStarsNetworkSource
 import com.dhimasdewanto.githubstars.data.datasources.GithubStarsNetworkSourceImpl
 import com.dhimasdewanto.githubstars.data.repositories.GithubStarsRepoData
@@ -24,6 +27,7 @@ class GitHubStarsKodein : Application(), KodeinAware {
     override val kodein: Kodein = Kodein.lazy {
         import(androidXModule(this@GitHubStarsKodein))
 
+        bind<ThemeProvider>() with singleton { ThemeProviderImpl(instance()) }
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { GithubStarsApiService(instance()) }
         bind<GithubStarsNetworkSource>() with singleton { GithubStarsNetworkSourceImpl(instance()) }
@@ -33,8 +37,12 @@ class GitHubStarsKodein : Application(), KodeinAware {
         bind() from provider { ViewSearchViewModelFactory(instance()) }
     }
 
+    private val themeProvider by instance<ThemeProvider>()
+
     override fun onCreate() {
         super.onCreate()
         AndroidThreeTen.init(this)
+
+        themeProvider.setThemeByPreference()
     }
 }

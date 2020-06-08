@@ -5,7 +5,7 @@
             android:defaultValue="DEFAULT"
             android:entries="@array/preferences_theme_entries"
             android:entryValues="@array/preferences_theme_values"
-            android:key="list_preference_themes"
+            android:key="LIST_PREFERENCE_THEMES"
             android:summary="%s"
             android:title="App Themes" />
     </PreferenceCategory>

@@ -26,7 +26,7 @@ import org.kodein.di.generic.instance
 class ViewAllFragment : ScopeFragment(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
     override val kodein: Kodein by closestKodein()
-    private val viewModelFactory: ViewAllViewModelFactory by instance<ViewAllViewModelFactory>()
+    private val viewModelFactory by instance<ViewAllViewModelFactory>()
 
     private lateinit var viewModel: ViewAllViewModel
     private lateinit var recyclerAdapter: GitHubStarsRecyclerAdapter
