@@ -43,6 +43,6 @@ class GitHubStarsKodein : Application(), KodeinAware {
         super.onCreate()
         AndroidThreeTen.init(this)
 
-        themeProvider.setThemeByPreference()
+        themeProvider.initTheme()
     }
 }

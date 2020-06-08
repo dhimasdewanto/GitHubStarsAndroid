@@ -10,11 +10,9 @@ abstract class ThemeProvider(context: Context) {
     protected val preferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(appContext)
 
-    abstract fun getTheme(): String
+    abstract fun initTheme()
 
-    abstract fun setThemeByPreference()
+    abstract fun getTheme(): Themes
 
-    abstract fun setOnClickPreference()
-
-//    abstract fun onThemeChangeListener()
+    abstract fun setTheme(theme: Themes)
 }
