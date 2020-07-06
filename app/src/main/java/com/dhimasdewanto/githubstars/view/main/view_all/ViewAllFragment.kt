@@ -6,24 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
-import com.dhimasdewanto.githubstars.core.ScopeFragment
+import com.dhimasdewanto.githubstars.core.mvi.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.view.main.view_all.adapters.GitHubStarsRecyclerAdapter
 import kotlinx.android.synthetic.main.list_view_github_stars.*
-import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
 
-class ViewAllFragment : ScopeFragment(), KodeinAware,
+class ViewAllFragment : ScopeFragment<ViewAllState, ViewAllIntent>(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
     override val kodein: Kodein by closestKodein()
     private val viewModelFactory by instance<ViewAllViewModelFactory>()
@@ -42,13 +40,15 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewAllViewModel::class.java)
+        setIntentChannel(viewModel.intentChannel)
+        setViewModelState(viewModel.viewModelState)
 
         initRecyclerView()
-        bindStateToUI()
         setInfiniteScroll()
 
-        startFetching()
+        sendIntent(ViewAllIntent.StartFetching)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,25 +73,6 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         }
     }
 
-    private fun bindStateToUI() = launch {
-        val viewAllState = viewModel.state
-        viewAllState.observe(viewLifecycleOwner, Observer { state ->
-            when(state) {
-                is ViewAllState.Initial -> loading_bar.visibility = View.GONE
-                is ViewAllState.LoadingMoreData -> loading_bar.visibility = View.VISIBLE
-                is ViewAllState.ShowResult -> {
-                    loading_bar.visibility = View.GONE
-                    recyclerAdapter.submitList(state.listGithubStars)
-                    recyclerAdapter.notifyDataSetChanged()
-                }
-                is ViewAllState.Error -> {
-                    loading_bar.visibility = View.GONE
-                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
-    }
-
     private fun setInfiniteScroll() {
         recycler_view_github_stars.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -110,15 +91,23 @@ class ViewAllFragment : ScopeFragment(), KodeinAware,
         val total = recyclerAdapter.itemCount
 
         if ((visibleItemCount + pastVisibleItem) >= total) {
-            loadMoreData()
+            sendIntent(ViewAllIntent.LoadMoreData)
         }
     }
 
-    private fun startFetching() = launch {
-        viewModel.startFetching()
-    }
-
-    private fun loadMoreData() = launch {
-        viewModel.loadMoreData()
+    override fun handleState(state: ViewAllState) {
+        when(state) {
+            is ViewAllState.Initial -> loading_bar.visibility = View.GONE
+            is ViewAllState.LoadingMoreData -> loading_bar.visibility = View.VISIBLE
+            is ViewAllState.ShowResult -> {
+                loading_bar.visibility = View.GONE
+                recyclerAdapter.submitList(state.listGithubStars)
+                recyclerAdapter.notifyDataSetChanged()
+            }
+            is ViewAllState.Error -> {
+                loading_bar.visibility = View.GONE
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }

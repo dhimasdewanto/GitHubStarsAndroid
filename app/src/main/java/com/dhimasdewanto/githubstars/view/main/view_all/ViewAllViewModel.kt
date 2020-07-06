@@ -1,35 +1,37 @@
 package com.dhimasdewanto.githubstars.view.main.view_all
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.dhimasdewanto.githubstars.core.Err
 import com.dhimasdewanto.githubstars.core.Ok
+import com.dhimasdewanto.githubstars.core.mvi.ScopeViewModel
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsParams
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
 
 class ViewAllViewModel(
     private val useCase: GetListGitHubStarsUseCase
-) : ViewModel() {
-    private val _state = MutableLiveData<ViewAllState>(ViewAllState.Initial)
-    val state: LiveData<ViewAllState>
-        get() = _state
+) : ScopeViewModel<ViewAllState, ViewAllIntent>(ViewAllState.Initial) {
 
-    suspend fun startFetching() {
-        if (state.value is ViewAllState.Initial) {
-            _state.value = ViewAllState.LoadingMoreData
+    override suspend fun handleIntent(intent: ViewAllIntent) {
+        when (intent) {
+            ViewAllIntent.StartFetching -> startFetching()
+            ViewAllIntent.LoadMoreData -> loadMoreData()
+        }
+    }
+
+    private suspend fun startFetching() {
+        if (state is ViewAllState.Initial) {
+            state = ViewAllState.LoadingMoreData
             addListGithubStars(1)
         }
     }
 
-    suspend fun loadMoreData() {
-        if (state.value is ViewAllState.ShowResult) {
-            val stateValue = (state.value as ViewAllState.ShowResult)
+    private suspend fun loadMoreData() {
+        if (state is ViewAllState.ShowResult) {
+            val stateValue = (state as ViewAllState.ShowResult)
             val newPage = stateValue.page + 1
             val currentListGithubStars = stateValue.listGithubStars
 
-            _state.value = ViewAllState.LoadingMoreData
+            state = ViewAllState.LoadingMoreData
             addListGithubStars(newPage, currentListGithubStars)
         }
     }
@@ -38,14 +40,15 @@ class ViewAllViewModel(
         page: Int,
         listGithubStars: List<GitHubStars> = emptyList()
     ) {
-        when (val result = useCase.call(GetListGitHubStarsParams(page))) {
-            is Err -> _state.value = ViewAllState.Error(result.error.message)
+        state = when (val result = useCase.call(GetListGitHubStarsParams(page))) {
+            is Err -> ViewAllState.Error(result.error.message)
             is Ok -> {
                 // NOT REVERSED!
                 val newListGithubStars = listGithubStars + result.value
 
-                _state.value = ViewAllState.ShowResult(newListGithubStars, page)
+                ViewAllState.ShowResult(newListGithubStars, page)
             }
         }
     }
+
 }
