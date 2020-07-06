@@ -1,8 +1,7 @@
-package com.dhimasdewanto.githubstars.view.detail
+package com.dhimasdewanto.githubstars.view.screens.detail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.dhimasdewanto.githubstars.R
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 import kotlinx.android.synthetic.main.activity_detail.*

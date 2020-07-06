@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.main.view_all
+package com.dhimasdewanto.githubstars.view.screens.main.view_all
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
 import com.dhimasdewanto.githubstars.core.mvi.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
-import com.dhimasdewanto.githubstars.view.main.view_all.adapters.GitHubStarsRecyclerAdapter
+import com.dhimasdewanto.githubstars.view.adapters.GitHubStarsRecyclerAdapter
 import kotlinx.android.synthetic.main.list_view_github_stars.*
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -24,7 +24,7 @@ import org.kodein.di.generic.instance
 class ViewAllFragment : ScopeFragment<ViewAllState, ViewAllIntent>(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
     override val kodein: Kodein by closestKodein()
-    private val viewModelFactory by instance<ViewAllViewModelFactory>()
+    private val viewModelFactory: ViewAllViewModelFactory by instance()
 
     private lateinit var viewModel: ViewAllViewModel
     private lateinit var recyclerAdapter: GitHubStarsRecyclerAdapter
@@ -96,7 +96,7 @@ class ViewAllFragment : ScopeFragment<ViewAllState, ViewAllIntent>(), KodeinAwar
     }
 
     override fun handleState(state: ViewAllState) {
-        when(state) {
+        when (state) {
             is ViewAllState.Initial -> loading_bar.visibility = View.GONE
             is ViewAllState.LoadingMoreData -> loading_bar.visibility = View.VISIBLE
             is ViewAllState.ShowResult -> {

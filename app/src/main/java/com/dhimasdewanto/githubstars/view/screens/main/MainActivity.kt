@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.main
+package com.dhimasdewanto.githubstars.view.screens.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

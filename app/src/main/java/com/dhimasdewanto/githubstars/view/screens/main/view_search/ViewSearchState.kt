@@ -1,8 +1,9 @@
-package com.dhimasdewanto.githubstars.view.main.view_search
+package com.dhimasdewanto.githubstars.view.screens.main.view_search
 
+import com.dhimasdewanto.githubstars.core.mvi.IState
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
 
-sealed class ViewSearchState {
+sealed class ViewSearchState : IState {
     object Initial : ViewSearchState()
 
     data class ShowResult(

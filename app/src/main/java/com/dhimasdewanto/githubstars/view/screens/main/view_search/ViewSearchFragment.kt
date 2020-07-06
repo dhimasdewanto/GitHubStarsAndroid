@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.main.view_search
+package com.dhimasdewanto.githubstars.view.screens.main.view_search
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,22 +13,20 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhimasdewanto.githubstars.R
-import com.dhimasdewanto.githubstars.core.ScopeFragment
+import com.dhimasdewanto.githubstars.core.mvi.ScopeFragment
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars
-import com.dhimasdewanto.githubstars.view.main.view_all.adapters.GitHubStarsRecyclerAdapter
+import com.dhimasdewanto.githubstars.view.adapters.GitHubStarsRecyclerAdapter
 import kotlinx.android.synthetic.main.fragment_view_search.*
 import kotlinx.android.synthetic.main.list_view_github_stars.*
-import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
 
-
-class ViewSearchFragment : ScopeFragment(), KodeinAware,
+class ViewSearchFragment : ScopeFragment<ViewSearchState, ViewSearchIntent>(), KodeinAware,
     GitHubStarsRecyclerAdapter.GitHubStarsViewHolder.Interaction {
     override val kodein: Kodein by closestKodein()
-    private val viewModelFactory: ViewSearchViewModelFactory by instance<ViewSearchViewModelFactory>()
+    private val viewModelFactory: ViewSearchViewModelFactory by instance()
 
     private lateinit var viewModel: ViewSearchViewModel
     private lateinit var recyclerAdapter: GitHubStarsRecyclerAdapter
@@ -44,9 +42,12 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel = ViewModelProvider(this, viewModelFactory).get(ViewSearchViewModel::class.java)
+        setViewModelState(viewModel.viewModelState)
+        setIntentChannel(viewModel.intentChannel)
+
         initRecyclerView()
-        bindStateToUI()
         setOnSearchButton()
         setInfiniteScroll()
     }
@@ -66,13 +67,9 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
 
     private fun setOnSearchButton() {
         btn_search.setOnClickListener {
-            startSearching()
+            val searchText = edit_text_search.text.toString()
+            sendIntent(ViewSearchIntent.StartSearching(searchText))
         }
-    }
-
-    private fun startSearching() = launch {
-        val searchText = edit_text_search.text.toString()
-        viewModel.startSearching(searchText)
     }
 
     private fun initRecyclerView() {
@@ -82,39 +79,6 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
             layoutManager = this@ViewSearchFragment.layoutManager
             adapter = recyclerAdapter
         }
-    }
-
-    private fun bindStateToUI() = launch {
-        val viewSearchState = viewModel.state
-        viewSearchState.observe(viewLifecycleOwner, Observer { state ->
-            when(state) {
-                is ViewSearchState.Initial -> {
-                    loading_bar.visibility = View.GONE
-                    text_search_initial.visibility = View.VISIBLE
-                }
-                is ViewSearchState.ShowResult -> {
-                    loading_bar.visibility = View.GONE
-                    text_search_initial.visibility = View.GONE
-                    recyclerAdapter.submitList(state.listGithubStars)
-                }
-                is ViewSearchState.Loading -> {
-                    loading_bar.visibility = View.VISIBLE
-                    text_search_initial.visibility = View.GONE
-                    recyclerAdapter.submitList(emptyList())
-                }
-                is ViewSearchState.LoadingMoreData -> {
-                    loading_bar.visibility = View.VISIBLE
-                    text_search_initial.visibility = View.GONE
-                }
-                is ViewSearchState.Error -> {
-                    loading_bar.visibility = View.GONE
-                    text_search_initial.visibility = View.GONE
-                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
-                }
-            }
-
-            recyclerAdapter.notifyDataSetChanged()
-        })
     }
 
     private fun setInfiniteScroll() {
@@ -135,12 +99,38 @@ class ViewSearchFragment : ScopeFragment(), KodeinAware,
         val total = recyclerAdapter.itemCount
 
         if ((visibleItemCount + pastVisibleItem) >= total) {
-            loadMoreData()
+            sendIntent(ViewSearchIntent.LoadMoreData)
         }
     }
 
-    private fun loadMoreData() = launch {
-        viewModel.loadMoreData()
+    override fun handleState(state: ViewSearchState) {
+        when(state) {
+            is ViewSearchState.Initial -> {
+                loading_bar.visibility = View.GONE
+                text_search_initial.visibility = View.VISIBLE
+            }
+            is ViewSearchState.ShowResult -> {
+                loading_bar.visibility = View.GONE
+                text_search_initial.visibility = View.GONE
+                recyclerAdapter.submitList(state.listGithubStars)
+                recyclerAdapter.notifyDataSetChanged()
+            }
+            is ViewSearchState.Loading -> {
+                loading_bar.visibility = View.VISIBLE
+                text_search_initial.visibility = View.GONE
+                recyclerAdapter.submitList(emptyList())
+                recyclerAdapter.notifyDataSetChanged()
+            }
+            is ViewSearchState.LoadingMoreData -> {
+                loading_bar.visibility = View.VISIBLE
+                text_search_initial.visibility = View.GONE
+            }
+            is ViewSearchState.Error -> {
+                loading_bar.visibility = View.GONE
+                text_search_initial.visibility = View.GONE
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 }

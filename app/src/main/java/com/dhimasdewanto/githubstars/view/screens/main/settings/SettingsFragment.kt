@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.main.settings
+package com.dhimasdewanto.githubstars.view.screens.main.settings
 
 import android.os.Bundle
 import androidx.preference.Preference

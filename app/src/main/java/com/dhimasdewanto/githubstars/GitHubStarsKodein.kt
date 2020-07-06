@@ -1,7 +1,6 @@
 package com.dhimasdewanto.githubstars
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import com.dhimasdewanto.githubstars.core.interceptors.ConnectivityInterceptor
 import com.dhimasdewanto.githubstars.core.interceptors.ConnectivityInterceptorImpl
 import com.dhimasdewanto.githubstars.core.themes.ThemeProvider
@@ -12,8 +11,8 @@ import com.dhimasdewanto.githubstars.data.repositories.GithubStarsRepoData
 import com.dhimasdewanto.githubstars.data.services.GithubStarsApiService
 import com.dhimasdewanto.githubstars.domain.repositories.GithubStarsRepo
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
-import com.dhimasdewanto.githubstars.view.main.view_all.ViewAllViewModelFactory
-import com.dhimasdewanto.githubstars.view.main.view_search.ViewSearchViewModelFactory
+import com.dhimasdewanto.githubstars.view.screens.main.view_all.ViewAllViewModelFactory
+import com.dhimasdewanto.githubstars.view.screens.main.view_search.ViewSearchViewModelFactory
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -23,6 +22,7 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 
+@Suppress("SpellCheckingInspection", "unused")
 class GitHubStarsKodein : Application(), KodeinAware {
     override val kodein: Kodein = Kodein.lazy {
         import(androidXModule(this@GitHubStarsKodein))

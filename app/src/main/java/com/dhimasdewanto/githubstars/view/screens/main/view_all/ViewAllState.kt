@@ -1,4 +1,4 @@
-package com.dhimasdewanto.githubstars.view.main.view_all
+package com.dhimasdewanto.githubstars.view.screens.main.view_all
 
 import com.dhimasdewanto.githubstars.core.mvi.IState
 import com.dhimasdewanto.githubstars.domain.entities.GitHubStars

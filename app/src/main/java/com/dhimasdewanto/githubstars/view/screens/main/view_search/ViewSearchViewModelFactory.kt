@@ -1,14 +1,14 @@
-package com.dhimasdewanto.githubstars.view.main.view_all
+package com.dhimasdewanto.githubstars.view.screens.main.view_search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.dhimasdewanto.githubstars.domain.usecases.GetListGitHubStarsUseCase
 
 @Suppress("UNCHECKED_CAST")
-class ViewAllViewModelFactory(
+class ViewSearchViewModelFactory(
     private val useCase: GetListGitHubStarsUseCase
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T: ViewModel?> create(modelClass: Class<T>) : T {
-        return ViewAllViewModel(useCase) as T
+        return ViewSearchViewModel(useCase) as T
     }
 }
